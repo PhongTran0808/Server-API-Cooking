@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * REST API Controller for Category operations
  */
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @CrossOrigin(origins = "*")
 @Tag(name = "Categories", description = "API quản lý danh mục món ăn")
 public class CategoryController {

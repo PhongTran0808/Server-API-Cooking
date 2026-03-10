@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Security configuration for Cooking App Server
@@ -15,8 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Enable CORS with configuration source
             .csrf(csrf -> csrf.disable()) // Disable CSRF for API endpoints
             .authorizeHttpRequests(authz -> authz
                 .anyRequest().permitAll() // Allow all requests without authentication

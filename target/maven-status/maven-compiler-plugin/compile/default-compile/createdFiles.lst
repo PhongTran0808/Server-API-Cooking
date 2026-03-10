@@ -22,8 +22,10 @@ com\cookingapp\server\api\RatingController.class
 com\cookingapp\server\repository\RecipeRepository.class
 com\cookingapp\server\repository\UserRepository.class
 com\cookingapp\server\api\SearchController.class
+com\cookingapp\server\api\UserController$LoginRequest.class
 com\cookingapp\server\config\WebConfig.class
 com\cookingapp\server\api\IngredientController.class
+com\cookingapp\server\api\UserController$RegisterRequest.class
 com\cookingapp\server\entity\Ingredient$IngredientCategory.class
 com\cookingapp\server\entity\Ingredient.class
 com\cookingapp\server\service\DataInitializationService.class

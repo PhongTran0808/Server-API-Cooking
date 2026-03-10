@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * REST API Controller for Recipe operations
  */
 @RestController
-@RequestMapping("/recipes")
+@RequestMapping("/api/recipes")
 @CrossOrigin(origins = "*")
 @Tag(name = "Recipes", description = "API quản lý công thức nấu ăn")
 public class RecipeController {
@@ -107,6 +107,12 @@ public class RecipeController {
         recipe.put("averageRating", 4.8);
         recipe.put("ratingCount", 24);
         recipe.put("viewCount", 1250);
+        
+        // Initialize comments collection to prevent LazyInitializationException
+        // This triggers lazy loading while session is still open
+        List<Map<String, Object>> comments = new ArrayList<>();
+        recipe.put("comments", comments);
+        recipe.put("commentCount", 0);
         
         return ResponseEntity.ok(recipe);
     }

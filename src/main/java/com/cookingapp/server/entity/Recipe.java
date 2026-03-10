@@ -2,6 +2,7 @@ package com.cookingapp.server.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "recipes")
@@ -35,9 +36,15 @@ public class Recipe {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+    
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Rating> ratings;
+    
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Favorite> favorites;
     
     // Constructors
     public Recipe() {}
@@ -95,6 +102,28 @@ public class Recipe {
     
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+    
+    public List<Rating> getRatings() { return ratings; }
+    public void setRatings(List<Rating> ratings) { this.ratings = ratings; }
+    
+    public List<Favorite> getFavorites() { return favorites; }
+    public void setFavorites(List<Favorite> favorites) { this.favorites = favorites; }
+    
+    // Helper methods
+    public int getFavoriteCount() {
+        return favorites != null ? favorites.size() : 0;
+    }
+    
+    public void updateRatingStats() {
+        if (ratings != null && !ratings.isEmpty()) {
+            double sum = ratings.stream().mapToInt(Rating::getRating).sum();
+            this.averageRating = sum / ratings.size();
+            this.ratingCount = ratings.size();
+        } else {
+            this.averageRating = 0.0;
+            this.ratingCount = 0;
+        }
+    }
     
     @PreUpdate
     public void preUpdate() {

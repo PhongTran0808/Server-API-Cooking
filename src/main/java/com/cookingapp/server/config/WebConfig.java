@@ -29,8 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // Redirect root to index page
-        registry.addViewController("/").setViewName("forward:/index.html");
-        registry.addViewController("/index").setViewName("forward:/index.html");
+        // No view controller mapping needed - let Spring handle static resources
+        // Avoid redirect loops by not mapping "/" to index.html
     }
 }

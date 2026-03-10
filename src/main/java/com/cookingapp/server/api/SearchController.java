@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/api/search")
 @Tag(name = "Search", description = "API tìm kiếm công thức nấu ăn")
 public class SearchController {
 

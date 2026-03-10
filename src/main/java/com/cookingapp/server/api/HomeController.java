@@ -1,14 +1,24 @@
 package com.cookingapp.server.api;
 
+import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Home controller for serving the main page and basic info
  */
-@Controller
-public class HomeController {
+@RestController
+public class HomeController implements ErrorController {
 
     @GetMapping("/")
     @ResponseBody
@@ -69,20 +79,32 @@ public class HomeController {
                     
                     <div class="grid">
                         <div class="endpoint">
+                            <h3>👤 Users API</h3>
+                            <p><strong>GET</strong> <a href="/api/users">/api/users</a> - Danh sách người dùng</p>
+                            <p><strong>POST</strong> /api/users/register - Đăng ký</p>
+                            <p><strong>POST</strong> /api/users/login - Đăng nhập</p>
+                            <p><strong>GET</strong> <a href="/api/users/1">/api/users/{id}</a> - Chi tiết người dùng</p>
+                        </div>
+                        
+                        <div class="endpoint">
                             <h3>🍽️ Recipes API</h3>
-                            <p><strong>GET</strong> <a href="/recipes">/recipes</a> - Danh sách công thức</p>
-                            <p><strong>GET</strong> <a href="/recipes/1">/recipes/{id}</a> - Chi tiết công thức</p>
-                            <p><strong>GET</strong> <a href="/recipes/featured">/recipes/featured</a> - Công thức nổi bật</p>
-                            <p><strong>POST</strong> /recipes - Tạo công thức mới</p>
-                            <p><strong>PUT</strong> /recipes/{id} - Cập nhật công thức</p>
-                            <p><strong>DELETE</strong> /recipes/{id} - Xóa công thức</p>
+                            <p><strong>GET</strong> <a href="/api/recipes">/api/recipes</a> - Danh sách công thức</p>
+                            <p><strong>GET</strong> <a href="/api/recipes/1">/api/recipes/{id}</a> - Chi tiết công thức</p>
+                            <p><strong>GET</strong> <a href="/api/recipes/featured">/api/recipes/featured</a> - Công thức nổi bật</p>
+                            <p><strong>POST</strong> /api/recipes - Tạo công thức mới</p>
                         </div>
                         
                         <div class="endpoint">
                             <h3>📂 Categories API</h3>
-                            <p><strong>GET</strong> <a href="/categories">/categories</a> - Danh sách danh mục</p>
-                            <p><strong>GET</strong> <a href="/categories/1">/categories/{id}</a> - Chi tiết danh mục</p>
-                            <p><strong>GET</strong> <a href="/categories/1/recipes">/categories/{id}/recipes</a> - Công thức theo danh mục</p>
+                            <p><strong>GET</strong> <a href="/api/categories">/api/categories</a> - Danh sách danh mục</p>
+                            <p><strong>GET</strong> <a href="/api/categories/1">/api/categories/{id}</a> - Chi tiết danh mục</p>
+                            <p><strong>GET</strong> <a href="/api/categories/1/recipes">/api/categories/{id}/recipes</a> - Công thức theo danh mục</p>
+                        </div>
+                        
+                        <div class="endpoint">
+                            <h3>🔍 Search API</h3>
+                            <p><strong>GET</strong> <a href="/api/search?q=chicken">/api/search?q=chicken</a> - Tìm kiếm công thức</p>
+                            <p><strong>GET</strong> <a href="/api/search/suggestions?q=ch">/api/search/suggestions?q=ch</a> - Gợi ý tìm kiếm</p>
                         </div>
                     </div>
                     
@@ -102,23 +124,8 @@ public class HomeController {
                         </div>
                     </div>
                     
-                    <h2>📱 Client Applications:</h2>
-                    
-                    <div class="grid">
-                        <div class="endpoint">
-                            <h3>🌐 Test Client</h3>
-                            <p>Mở file <strong>test-client.html</strong> trong browser để test API</p>
-                        </div>
-                        
-                        <div class="endpoint">
-                            <h3>💻 Full Client</h3>
-                            <p>Cài đặt Node.js và chạy:</p>
-                            <p><code>cd cooking-app-client && npm install && npm start</code></p>
-                        </div>
-                    </div>
-                    
                     <div class="status" style="background: #2196F3; margin-top: 30px;">
-                        🎉 Hệ thống client-server architecture đã sẵn sàng!
+                        🎉 Hệ thống REST API đã sẵn sàng!
                     </div>
                 </div>
             </body>
@@ -126,23 +133,78 @@ public class HomeController {
             """;
     }
 
+    @GetMapping("/api")
+    @ResponseBody
+    public Map<String, Object> apiInfo() {
+        Map<String, Object> info = new HashMap<>();
+        info.put("name", "Cooking App REST API Server");
+        info.put("version", "1.0.0");
+        info.put("status", "running");
+        info.put("port", 8081);
+        info.put("database", "H2 In-Memory");
+        
+        Map<String, String> endpoints = new HashMap<>();
+        endpoints.put("users", "/api/users");
+        endpoints.put("recipes", "/api/recipes");
+        endpoints.put("categories", "/api/categories");
+        endpoints.put("search", "/api/search");
+        endpoints.put("swagger-ui", "/swagger-ui.html");
+        endpoints.put("h2-console", "/h2-console");
+        
+        info.put("endpoints", endpoints);
+        return info;
+    }
+
     @GetMapping("/info")
     @ResponseBody
-    public String info() {
-        return """
-            {
-                "name": "Cooking App REST API Server",
-                "version": "1.0.0",
-                "status": "running",
-                "port": 8081,
-                "context": "/api",
-                "database": "H2 In-Memory",
-                "endpoints": {
-                    "recipes": "/recipes",
-                    "categories": "/categories",
-                    "h2-console": "/h2-console"
-                }
+    public Map<String, Object> info() {
+        return apiInfo();
+    }
+
+    @GetMapping("/health")
+    @ResponseBody
+    public Map<String, Object> health() {
+        Map<String, Object> health = new HashMap<>();
+        health.put("status", "UP");
+        health.put("timestamp", System.currentTimeMillis());
+        health.put("service", "cooking-app-server");
+        return health;
+    }
+
+    // Error handling
+    @RequestMapping("/error")
+    public ResponseEntity<Map<String, Object>> handleError(HttpServletRequest request) {
+        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        Map<String, Object> errorResponse = new HashMap<>();
+        
+        if (status != null) {
+            Integer statusCode = Integer.valueOf(status.toString());
+            
+            if (statusCode == HttpStatus.NOT_FOUND.value()) {
+                errorResponse.put("error", "Endpoint không tồn tại");
+                errorResponse.put("message", "API endpoint bạn đang tìm không tồn tại. Vui lòng kiểm tra lại URL.");
+                errorResponse.put("status", 404);
+                errorResponse.put("availableEndpoints", Map.of(
+                    "home", "/",
+                    "api-info", "/api",
+                    "users", "/api/users",
+                    "recipes", "/api/recipes",
+                    "categories", "/api/categories",
+                    "search", "/api/search",
+                    "swagger-ui", "/swagger-ui.html"
+                ));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                errorResponse.put("error", "Lỗi server");
+                errorResponse.put("message", "Đã xảy ra lỗi server. Vui lòng thử lại sau.");
+                errorResponse.put("status", 500);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
-            """;
+        }
+        
+        errorResponse.put("error", "Lỗi không xác định");
+        errorResponse.put("message", "Đã xảy ra lỗi không xác định.");
+        errorResponse.put("status", 500);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }

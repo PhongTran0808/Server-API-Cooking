@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍳 Test Cooking App API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { text-align: center; color: #fff; }
+        .endpoint-group {
+            background: rgba(255,255,255,0.2);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .endpoint {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .response {
+            background: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status-ok { border-left: 4px solid #4CAF50; }
+        .status-error { border-left: 4px solid #f44336; }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍳 Test Cooking App REST API</h1>
+        
+        <div class="endpoint-group">
+            <h2>🏠 Server Status</h2>
+            <div class="endpoint">
+                <button onclick="testEndpoint('GET', '/')">GET /</button>
+                <button onclick="testEndpoint('GET', '/api')">GET /api</button>
+                <button onclick="testEndpoint('GET', '/health')">GET /health</button>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h2>👤 Users API</h2>
+            <div class="endpoint">
+                <button onclick="testEndpoint('GET', '/api/users')">GET /api/users</button>
+                <button onclick="testEndpoint('GET', '/api/users/1')">GET /api/users/1</button>
+                <button onclick="testRegister()">POST /api/users/register</button>
+                <button onclick="testLogin()">POST /api/users/login</button>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h2>🍽️ Recipes API</h2>
+            <div class="endpoint">
+                <button onclick="testEndpoint('GET', '/api/recipes')">GET /api/recipes</button>
+                <button onclick="testEndpoint('GET', '/api/recipes/1')">GET /api/recipes/1</button>
+                <button onclick="testEndpoint('GET', '/api/recipes/featured')">GET /api/recipes/featured</button>
+                <button onclick="testCreateRecipe()">POST /api/recipes</button>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h2>📂 Categories API</h2>
+            <div class="endpoint">
+                <button onclick="testEndpoint('GET', '/api/categories')">GET /api/categories</button>
+                <button onclick="testEndpoint('GET', '/api/categories/1')">GET /api/categories/1</button>
+                <button onclick="testEndpoint('GET', '/api/categories/1/recipes')">GET /api/categories/1/recipes</button>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h2>🔍 Search API</h2>
+            <div class="endpoint">
+                <button onclick="testEndpoint('GET', '/api/search/recipes?keyword=phở')">Search "phở"</button>
+                <button onclick="testEndpoint('GET', '/api/search/recipes?difficulty=EASY')">Search EASY</button>
+                <button onclick="testEndpoint('GET', '/api/search/suggestions')">GET suggestions</button>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h2>📊 Response</h2>
+            <div id="response" class="response">Click any button above to test API endpoints...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8081';
+        
+        async function testEndpoint(method, path, body = null) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.textContent = `Testing ${method} ${path}...`;
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(API_BASE + path, options);
+                const data = await response.text();
+                
+                let formattedData;
+                try {
+                    formattedData = JSON.stringify(JSON.parse(data), null, 2);
+                } catch {
+                    formattedData = data;
+                }
+                
+                responseDiv.textContent = `${method} ${path}\nStatus: ${response.status} ${response.statusText}\n\n${formattedData}`;
+                responseDiv.className = response.ok ? 'response status-ok' : 'response status-error';
+                
+            } catch (error) {
+                responseDiv.textContent = `${method} ${path}\nError: ${error.message}`;
+                responseDiv.className = 'response status-error';
+            }
+        }
+        
+        function testRegister() {
+            const userData = {
+                username: 'testuser' + Date.now(),
+                email: 'test' + Date.now() + '@example.com',
+                password: 'password123',
+                fullName: 'Test User'
+            };
+            testEndpoint('POST', '/api/users/register', userData);
+        }
+        
+        function testLogin() {
+            const loginData = {
+                usernameOrEmail: 'testuser',
+                password: 'password123'
+            };
+            testEndpoint('POST', '/api/users/login', loginData);
+        }
+        
+        function testCreateRecipe() {
+            const recipeData = {
+                title: 'Test Recipe',
+                description: 'A test recipe',
+                ingredients: 'Test ingredients',
+                instructions: 'Test instructions',
+                cookingTime: 30,
+                difficulty: 'EASY',
+                servings: 2
+            };
+            testEndpoint('POST', '/api/recipes', recipeData);
+        }
+    </script>
+</body>
+</html>
