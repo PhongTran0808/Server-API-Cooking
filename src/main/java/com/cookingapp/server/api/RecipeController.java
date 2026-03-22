@@ -43,12 +43,14 @@ public class RecipeController {
             @Parameter(description = "Lọc theo danh mục") 
             @RequestParam(required = false) String category,
             @Parameter(description = "Lọc theo độ khó") 
-            @RequestParam(required = false) String difficulty) {
+            @RequestParam(required = false) String difficulty,
+            @Parameter(description = "Trả về đầy đủ thông tin bao gồm nguyên liệu và hướng dẫn") 
+            @RequestParam(defaultValue = "false") boolean full) {
         
         Map<String, Object> response = new HashMap<>();
         List<Map<String, Object>> recipes = new ArrayList<>();
         
-        // Sample recipe data
+        // Dữ liệu mẫu
         Map<String, Object> recipe1 = new HashMap<>();
         recipe1.put("id", 1);
         recipe1.put("title", "Phở Bò Hà Nội");
@@ -59,6 +61,10 @@ public class RecipeController {
         recipe1.put("servings", 4);
         recipe1.put("averageRating", 4.8);
         recipe1.put("ratingCount", 24);
+        if (full) {
+            recipe1.put("ingredients", "- 500g xương bò\n- 300g thịt bò tái\n- 200g bánh phở\n- Hành tây, gừng\n- Gia vị: muối, đường, nước mắm\n- Rau thơm: ngò gai, hành lá");
+            recipe1.put("instructions", "1. Ninh xương bò 3-4 tiếng để có nước dùng trong\n2. Thái thịt bò mỏng\n3. Trụng bánh phở\n4. Cho bánh phở vào tô, xếp thịt bò lên trên\n5. Chan nước dùng nóng\n6. Ăn kèm rau thơm và gia vị");
+        }
         recipes.add(recipe1);
         
         Map<String, Object> recipe2 = new HashMap<>();
@@ -71,6 +77,10 @@ public class RecipeController {
         recipe2.put("servings", 2);
         recipe2.put("averageRating", 4.5);
         recipe2.put("ratingCount", 18);
+        if (full) {
+            recipe2.put("ingredients", "- 300g thịt lợn xay\n- 200g bún tươi\n- Nước mắm, đường, tỏi, ớt\n- Rau sống: xà lách, kinh giới, tía tô");
+            recipe2.put("instructions", "1. Trộn thịt lợn với gia vị, nặn thành viên\n2. Nướng chả trên than hoa\n3. Pha nước chấm chua ngọt\n4. Trụng bún\n5. Ăn kèm rau sống và nước chấm");
+        }
         recipes.add(recipe2);
         
         response.put("recipes", recipes);
@@ -78,6 +88,7 @@ public class RecipeController {
         response.put("totalPages", 1);
         response.put("currentPage", page);
         response.put("pageSize", size);
+        response.put("full", full);
         
         return ResponseEntity.ok(response);
     }
@@ -115,6 +126,20 @@ public class RecipeController {
         recipe.put("commentCount", 0);
         
         return ResponseEntity.ok(recipe);
+    }
+
+    @Operation(
+        summary = "Lấy tất cả công thức đầy đủ thông tin",
+        description = "Trả về tất cả công thức bao gồm nguyên liệu và hướng dẫn nấu"
+    )
+    @GetMapping("/full")
+    public ResponseEntity<Map<String, Object>> getAllRecipesFull(
+            @Parameter(description = "Số trang (bắt đầu từ 0)")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Số lượng items per page")
+            @RequestParam(defaultValue = "10") int size) {
+        // Gọi lại getAllRecipes với full=true
+        return getAllRecipes(page, size, null, null, true);
     }
 
     @Operation(
