@@ -1,0 +1,48 @@
+# Ignore Java build artifacts and IDE files
+
+# Maven/Gradle build dirs and common artifacts
+**/target/
+**/build/
+target/
+build/
+
+# Packaged files
+*.jar
+*.war
+*.ear
+*.jar.original
+*.jar.original.*
+
+# Compiled classes
+*.class
+
+# IDE and editor files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Logs and temp
+*.log
+logs/
+*.tmp
+*~
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+*.env
+
+# Misc
+node_modules/
+npm-debug.log*
+
+# Explicit module-level ignores (helpful if some modules commit build artifacts)
+/Server-API-Cooking/target/
+/safeweb/build/
