@@ -20,10 +20,12 @@ public class CorsConfig {
         
         // Allow specific origins (client applications)
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",  // React development server
-            "http://localhost:8080",  // Original servlet application
+            "http://localhost:3000",   // React development server
+            "http://localhost:8080",   // Original servlet application (HTTP)
+            "https://localhost:8443",  // Original servlet application (HTTPS)
             "http://127.0.0.1:3000",
-            "http://127.0.0.1:8080"
+            "http://127.0.0.1:8080",
+            "https://127.0.0.1:8443"
         ));
         
         // Allow all HTTP methods
